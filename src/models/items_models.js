@@ -48,6 +48,24 @@ const addItem = (dataItem) => {
   });
 };
 
+// create model for edit an item
+const editItem = (dataItem, idItem) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      "UPDATE items SET ? WHERE id = ?",
+      [dataItem, idItem],
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          console.log(error);
+          reject(error);
+        }
+      }
+    );
+  });
+};
+
 //create model for delete an item
 const deleteItem = (idItem) => {
   return new Promise((resolve, reject) => {
@@ -105,6 +123,7 @@ module.exports = {
   detailItem,
   addItem,
   deleteItem,
+  editItem,
   findItem,
   countItems,
 };

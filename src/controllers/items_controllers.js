@@ -85,6 +85,40 @@ const addItem = async (req, res, next) => {
   }
 };
 
+// create controller for edit an item
+const editItem = async (req, res, next) => {
+  try {
+    const idItem = req.params.id;
+    const { name, price, stock, images } = req.body;
+    const [itemAvailable] = await itemsModel.findItem("id", idItem);
+    if (itemAvailable === undefined) {
+      handleResponse.response(res, null, 404, `item not available`);
+    } else if (
+      name === undefined ||
+      price === undefined ||
+      stock === undefined ||
+      images === undefined ||
+      name === "" ||
+      price === "" ||
+      stock === "" ||
+      images === ""
+    ) {
+      return next(createError(403, "edit item failed, please check the input"));
+    } else {
+      const dataItem = {
+        name,
+        price,
+        stock,
+        images,
+      };
+      await itemsModel.editItem(dataItem, idItem);
+      handleResponse.response(res, dataItem, 200, "successfully edited");
+    }
+  } catch (error) {
+    next(createError(500, new createError.InternalServerError()));
+  }
+};
+
 //create controller for delete user
 const deleteItem = async (req, res, next) => {
   try {
@@ -107,4 +141,5 @@ module.exports = {
   detailItem,
   addItem,
   deleteItem,
+  editItem,
 };
