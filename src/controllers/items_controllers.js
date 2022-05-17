@@ -56,7 +56,7 @@ const detailItem = async (req, res, next) => {
 const addItem = async (req, res, next) => {
   try {
     const { name, price, stock, images } = req.body;
-    const itemsAvailable = await itemsModel.findItem("name", name);
+    const itemAvailable = await itemsModel.findItem("name", name);
     if (
       name === undefined ||
       price === undefined ||
@@ -68,7 +68,7 @@ const addItem = async (req, res, next) => {
       images === ""
     ) {
       return next(createError(403, "add item failed, please check the input"));
-    } else if (itemsAvailable.length > 0) {
+    } else if (itemAvailable.length > 0) {
       return next(createError(403, "Item already available"));
     } else {
       const dataItem = {
@@ -85,9 +85,26 @@ const addItem = async (req, res, next) => {
   }
 };
 
+//create controller for delete user
+const deleteItem = async (req, res, next) => {
+  try {
+    const idItem = req.params.id;
+    const resultItem = await itemsModel.findItem("id", idItem);
+    if (resultItem.length === 0) {
+      return next(createError(403, `item not found`));
+    } else {
+      await itemsModel.deleteItem(idItem);
+      handleResponse.response(res, true, 200, `successfully deleted an item`);
+    }
+  } catch (error) {
+    next(createError(500, new createError.InternalServerError()));
+  }
+};
+
 // export modules to roytes
 module.exports = {
   getAllItems,
   detailItem,
   addItem,
+  deleteItem,
 };

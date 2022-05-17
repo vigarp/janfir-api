@@ -11,4 +11,6 @@ route.get("/:id", itemsController.detailItem);
 
 route.post("/", itemsController.addItem);
 
+route.delete("/:id", itemsController.deleteItem);
+
 module.exports = route;
