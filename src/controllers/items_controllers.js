@@ -57,6 +57,8 @@ const addItem = async (req, res, next) => {
   try {
     const { name, price, stock } = req.body;
     const fileName = req.file.filename;
+    console.log(req.body);
+    console.log(fileName);
     const itemAvailable = await itemsModel.findItem("name", name);
     if (
       name === undefined ||
@@ -82,6 +84,7 @@ const addItem = async (req, res, next) => {
       handleResponse.response(res, dataItem, 201, "item successfully added");
     }
   } catch (error) {
+    console.log(error);
     next(createError(500, new createError.InternalServerError()));
   }
 };
@@ -91,7 +94,6 @@ const editItem = async (req, res, next) => {
   try {
     const idItem = req.params.id;
     const { name, price, stock } = req.body;
-    const fileName = req.file.filename;
     const [itemAvailable] = await itemsModel.findItem("id", idItem);
     if (itemAvailable === undefined) {
       handleResponse.response(res, null, 404, `item not available`);
@@ -99,11 +101,9 @@ const editItem = async (req, res, next) => {
       name === undefined ||
       price === undefined ||
       stock === undefined ||
-      fileName === undefined ||
       name === "" ||
       price === "" ||
-      stock === "" ||
-      fileName === ""
+      stock === ""
     ) {
       return next(createError(403, "edit item failed, please check the input"));
     } else {
@@ -111,12 +111,12 @@ const editItem = async (req, res, next) => {
         name,
         price,
         stock,
-        images: `${process.env.BASE_URL}/file/${fileName}`,
       };
       await itemsModel.editItem(dataItem, idItem);
       handleResponse.response(res, dataItem, 200, "successfully edited");
     }
   } catch (error) {
+    console.log(error);
     next(createError(500, new createError.InternalServerError()));
   }
 };
