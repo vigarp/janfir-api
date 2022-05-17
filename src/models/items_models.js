@@ -18,6 +18,36 @@ const getAllItems = ({ searchQuery, limitQuery, offsetQuery }) => {
   });
 };
 
+// create model for see detail an item
+const detailItem = (idItems) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT id, name, price, stock, images FROM items WHERE id = ${idItems}`,
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          console.log(error);
+          reject(error);
+        }
+      }
+    );
+  });
+};
+
+// create model for add an item
+const addItem = (dataItem) => {
+  return new Promise((resolve, reject) => {
+    connection.query("INSERT INTO items SET ?", dataItem, (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
+    });
+  });
+};
+
 // create model for count items
 const countItems = () => {
   return new Promise((resolve, reject) => {
@@ -35,8 +65,27 @@ const countItems = () => {
   });
 };
 
+// create model for find/handling an item by name
+const findItem = (field, record) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT * FROM items WHERE ${field} = '${record}'`,
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          console.log(error);
+          reject(error);
+        }
+      }
+    );
+  });
+};
 // export modules to controllers
 module.exports = {
   getAllItems,
+  detailItem,
+  addItem,
+  findItem,
   countItems,
 };

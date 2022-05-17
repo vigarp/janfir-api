@@ -32,7 +32,62 @@ const getAllItems = async (req, res, next) => {
   }
 };
 
+// create controller for detail an item
+const detailItem = async (req, res, next) => {
+  try {
+    const idItem = req.params.id;
+    const [resultItems] = await itemsModel.detailItem(idItem);
+    if (resultItems === undefined) {
+      handleResponse.response(res, null, 404, `items not available`);
+    } else {
+      handleResponse.response(
+        res,
+        resultItems,
+        200,
+        "successfully fetched from server"
+      );
+    }
+  } catch (error) {
+    next(createError(500, new createError.InternalServerError()));
+  }
+};
+
+// create controller for add an item
+const addItem = async (req, res, next) => {
+  try {
+    const { name, price, stock, images } = req.body;
+    const itemsAvailable = await itemsModel.findItem("name", name);
+    if (
+      name === undefined ||
+      price === undefined ||
+      stock === undefined ||
+      images === undefined ||
+      name === "" ||
+      price === "" ||
+      stock === "" ||
+      images === ""
+    ) {
+      return next(createError(403, "add item failed, please check the input"));
+    } else if (itemsAvailable.length > 0) {
+      return next(createError(403, "Item already available"));
+    } else {
+      const dataItem = {
+        name,
+        price,
+        stock,
+        images,
+      };
+      await itemsModel.addItem(dataItem);
+      handleResponse.response(res, dataItem, 201, "item successfully added");
+    }
+  } catch (error) {
+    next(createError(500, new createError.InternalServerError()));
+  }
+};
+
 // export modules to roytes
 module.exports = {
   getAllItems,
+  detailItem,
+  addItem,
 };

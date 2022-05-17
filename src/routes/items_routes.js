@@ -7,5 +7,8 @@ const itemsController = require("../controllers/items_controllers");
 
 // declare router
 route.get("/", itemsController.getAllItems);
+route.get("/:id", itemsController.detailItem);
+
+route.post("/", itemsController.addItem);
 
 module.exports = route;
