@@ -55,17 +55,18 @@ const detailItem = async (req, res, next) => {
 // create controller for add an item
 const addItem = async (req, res, next) => {
   try {
-    const { name, price, stock, images } = req.body;
+    const { name, price, stock } = req.body;
+    const fileName = req.file.filename;
     const itemAvailable = await itemsModel.findItem("name", name);
     if (
       name === undefined ||
       price === undefined ||
       stock === undefined ||
-      images === undefined ||
+      fileName === undefined ||
       name === "" ||
       price === "" ||
       stock === "" ||
-      images === ""
+      fileName === ""
     ) {
       return next(createError(403, "add item failed, please check the input"));
     } else if (itemAvailable.length > 0) {
@@ -75,7 +76,7 @@ const addItem = async (req, res, next) => {
         name,
         price,
         stock,
-        images,
+        images: `${process.env.BASE_URL}/file/${fileName}`,
       };
       await itemsModel.addItem(dataItem);
       handleResponse.response(res, dataItem, 201, "item successfully added");
@@ -89,7 +90,8 @@ const addItem = async (req, res, next) => {
 const editItem = async (req, res, next) => {
   try {
     const idItem = req.params.id;
-    const { name, price, stock, images } = req.body;
+    const { name, price, stock } = req.body;
+    const fileName = req.file.filename;
     const [itemAvailable] = await itemsModel.findItem("id", idItem);
     if (itemAvailable === undefined) {
       handleResponse.response(res, null, 404, `item not available`);
@@ -97,11 +99,11 @@ const editItem = async (req, res, next) => {
       name === undefined ||
       price === undefined ||
       stock === undefined ||
-      images === undefined ||
+      fileName === undefined ||
       name === "" ||
       price === "" ||
       stock === "" ||
-      images === ""
+      fileName === ""
     ) {
       return next(createError(403, "edit item failed, please check the input"));
     } else {
@@ -109,7 +111,7 @@ const editItem = async (req, res, next) => {
         name,
         price,
         stock,
-        images,
+        images: `${process.env.BASE_URL}/file/${fileName}`,
       };
       await itemsModel.editItem(dataItem, idItem);
       handleResponse.response(res, dataItem, 200, "successfully edited");

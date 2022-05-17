@@ -7,6 +7,7 @@ const cors = require("cors");
 const app = express();
 const http = require("http");
 const server = http.createServer(app);
+const bodyParser = require("body-parser");
 
 const handleURL = require("./src/helpers/common");
 const handleResponse = require("./src/helpers/common");
@@ -16,6 +17,9 @@ const route = require("./src/routes");
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false, limit: "2gb" }));
 
 app.use("/v1", route);
 app.use("/file", express.static("./uploads"));
